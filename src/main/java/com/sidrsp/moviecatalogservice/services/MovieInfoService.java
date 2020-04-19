@@ -1,6 +1,7 @@
 package com.sidrsp.moviecatalogservice.services;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.sidrsp.moviecatalogservice.resources.models.Movie;
 import com.sidrsp.moviecatalogservice.resources.models.Rating;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,14 @@ public class MovieInfoService {
     @Qualifier("WebClient Bean")
     private WebClient.Builder webClientbuilder;
 
-    @HystrixCommand(fallbackMethod = "getFallbackMovieInfo")
+    @HystrixCommand(fallbackMethod = "getFallbackMovieInfo",
+            commandProperties = {
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
+                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "5"),
+                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50"),
+                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "5000")
+            }
+    )
     public Movie getMovieInfo(Rating rating) {
 
         /* using WebClient */
