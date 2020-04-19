@@ -1,5 +1,6 @@
 package com.sidrsp.moviecatalogservice.resources;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.sidrsp.moviecatalogservice.resources.models.CatalogItem;
 import com.sidrsp.moviecatalogservice.resources.models.Movie;
 import com.sidrsp.moviecatalogservice.resources.models.UserRating;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class MovieCatalogResource {
     private DiscoveryClient discoveryClient;
     */
     @RequestMapping("/{userId}")
+    @HystrixCommand(fallbackMethod = "getFallbackCatalog")
     public List<CatalogItem> getCatalog(@PathVariable String userId) {
 
         /* using RestTemplate */
@@ -51,6 +54,10 @@ public class MovieCatalogResource {
 
             return new CatalogItem(movie.getName(), "desc-test", rating.getRating());
         }).collect(Collectors.toList());
+    }
+
+    public List<CatalogItem> getFallbackCatalog(@PathVariable String userId) {
+        return Arrays.asList(new CatalogItem("fallback name", "fallback desc", 4));
     }
 
 }
