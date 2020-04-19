@@ -5,6 +5,8 @@ import com.sidrsp.moviecatalogservice.resources.models.CatalogItem;
 import com.sidrsp.moviecatalogservice.resources.models.Movie;
 import com.sidrsp.moviecatalogservice.resources.models.Rating;
 import com.sidrsp.moviecatalogservice.resources.models.UserRating;
+import com.sidrsp.moviecatalogservice.services.MovieInfoService;
+import com.sidrsp.moviecatalogservice.services.UserRatingInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -23,11 +25,10 @@ import java.util.stream.Collectors;
 public class MovieCatalogResource {
 
     @Autowired
-    private RestTemplate restTemplate;
+    private MovieInfoService movieInfoService;
 
     @Autowired
-    @Qualifier("WebClient Bean")
-    private WebClient.Builder webClientbuilder;
+    private UserRatingInfoService userRatingInfoService;
 
 
     /*
@@ -38,11 +39,9 @@ public class MovieCatalogResource {
     @RequestMapping("/{userId}")
     public List<CatalogItem> getCatalog(@PathVariable String userId) {
 
-        UserRating userRating = getUserRating(userId);
-
-        /* using WebClient */
+        UserRating userRating = userRatingInfoService.getUserRating(userId);
         return userRating.getUserRating().stream().map(rating -> {
-            Movie movie = getMovieInfo(rating);
+            Movie movie = movieInfoService.getMovieInfo(rating);
             return new CatalogItem(movie.getName(), "desc-test", rating.getRating());
         }).collect(Collectors.toList());
     }
@@ -54,9 +53,10 @@ public class MovieCatalogResource {
     * autowire, hystrix gets the proxy instance to call fallbacks
     *
     * */
+    /*
     @HystrixCommand(fallbackMethod = "getFallbackUserRating")
     private UserRating getUserRating(String userId) {
-        /* using RestTemplate */
+        *//* using RestTemplate *//*
         return restTemplate.getForObject(
                 "http://ratings-data-service/ratingsdata/users/" + userId, UserRating.class
         );
@@ -71,19 +71,6 @@ public class MovieCatalogResource {
         );
         return userRating;
     }
-
-    @HystrixCommand(fallbackMethod = "getFallbackMovieInfo")
-    private Movie getMovieInfo(Rating rating) {
-        return webClientbuilder.build()
-                .get()
-                .uri("http://movie-info-service/movies/" + rating.getMovieId())
-                .retrieve()
-                .bodyToMono(Movie.class)
-                .block();
-    }
-
-    private Movie getFallbackMovieInfo(Rating rating) {
-        return new Movie(rating.getMovieId(), "fallback movie name");
-    }
+    */
 
 }
