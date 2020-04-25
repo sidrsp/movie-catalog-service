@@ -2,6 +2,7 @@ package com.sidrsp.moviecatalogservice.resources;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,9 @@ public class GreetingController {
 
     @Autowired
     private DbSettings dbSettings;
+
+    @Autowired
+    private Environment environment;
 
     @Value("${greeting.message: default Hi}")
     private String greetingMsg;
@@ -51,6 +55,11 @@ public class GreetingController {
     @RequestMapping("/profile")
     public String getProfile() {
         return appName + appDesc + activeProfile + dbSettings.getConnection() + dbSettings.getHost() + dbSettings.getPort();
+    }
+
+    @RequestMapping("/env/props")
+    public String getEnvProps() {
+        return environment.toString();
     }
 
 }
