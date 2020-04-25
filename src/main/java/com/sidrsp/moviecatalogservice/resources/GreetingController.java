@@ -35,6 +35,9 @@ public class GreetingController {
     @Value("${app.desc}")
     private String appDesc;
 
+    @Value("${profile}")
+    private String activeProfile;
+
     @RequestMapping("/sayhello")
     public String greeting() {
         return appName + appDesc + greetingMsg + staticMessage + listValues + dbValueMap.get("username");
@@ -43,6 +46,11 @@ public class GreetingController {
     @RequestMapping("/withConfigProperties")
     public String withConfigProperties() {
         return greetingMsg + dbSettings.getConnection() + dbSettings.getHost() + dbSettings.getPort();
+    }
+
+    @RequestMapping("/profile")
+    public String getProfile() {
+        return appName + appDesc + activeProfile + dbSettings.getConnection() + dbSettings.getHost() + dbSettings.getPort();
     }
 
 }

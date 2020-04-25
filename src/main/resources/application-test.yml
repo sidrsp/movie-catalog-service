@@ -1,0 +1,6 @@
+db:
+  connection: "{connectionString: 'http://----', username: 'test-uname', password: 'test-pass'}"
+  host: 127.0.0.1
+  port: 5432
+
+profile: test-profile-configs
