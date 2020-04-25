@@ -29,9 +29,15 @@ public class GreetingController {
     @Value("#{${dbValues}}")
     private Map<String, String> dbValueMap;
 
+    @Value("${app.name}")
+    private String appName;
+
+    @Value("${app.desc}")
+    private String appDesc;
+
     @RequestMapping("/sayhello")
     public String greeting() {
-        return greetingMsg + staticMessage + listValues + dbValueMap.get("username");
+        return appName + appDesc + greetingMsg + staticMessage + listValues + dbValueMap.get("username");
     }
 
     @RequestMapping("/withConfigProperties")
